@@ -1,0 +1,28 @@
+name: Versioned UNICORE Docker Image
+
+on:
+  push:
+    tags: 
+     - unicore-connector-**
+
+jobs:
+
+  build-and-deploy-image:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v7
+
+    - name: Get version info
+      run: echo "RELEASE_VERSION=${GITHUB_REF##*/}" | sed "s/unicore-connector-//" >> $GITHUB_ENV
+
+    - name: Build the Docker image
+      run: make build
+
+    - name: Log in to the Container registry
+      run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+    - name: Push image
+      run: docker push ghcr.io/unicore-eu/unicore-connector:${{ env.RELEASE_VERSION }}
