@@ -36,14 +36,14 @@
  }
 
 _unicore_setup() {
-    
-    if [ ! -e "/local/environment" ]; then
-        echo "Reading /local/environment ..."
-        . /local/environment
+    sudo -u unicore touch /var/log/unicore/unicorex.log
+    if [ -e "/local/environment.sh" ]; then
+        echo "Reading /local/environment.sh ..."
+        . /local/environment.sh
     fi
 
     echo "Configuring access for HPC user '${HPC_USER}' ..."
-    cat > /opt/unicore/unicorex/conf/user-mapfile.json <<EOF
+    cat > /unicore/unicorex/conf/user-mapfile.json <<EOF
 {
   ".*": {
     "role": "user",
@@ -52,7 +52,7 @@ _unicore_setup() {
 }
 EOF
 
-    cat > /opt/unicore/unicorex/conf/identities.json <<EOF
+    cat > /unicore/unicorex/conf/identities.json <<EOF
 {
 
   "${HPC_USER}": {
@@ -71,9 +71,11 @@ _main() {
     _base_setup
 
     _unicore_setup
-
-    echo "Starting  UNICORE..."
-    sudo -E -u unicore /opt/unicore/start.sh
+    if [ -e "/local/environment.sh" ]; then
+        . /local/environment.sh
+    fi
+    echo "Starting  UNICORE ..."
+    sudo -E -u unicore /unicore/start.sh
 
     if [[ -t 0 && -t 1 ]] ; then
 	echo "Running interactive shell"
@@ -84,9 +86,8 @@ _main() {
             exec "$@"
 	fi
     else
-	echo "Running detached"
-	# just keep the services running
-	tail -f /opt/unicore/unicorex/logs/startup.log
+	echo "Running detached ..."
+    tail -f /var/log/unicore/unicorex.log
     fi
 }
 

@@ -49,6 +49,16 @@ Firewall considerations
  - OIDC token verification and user authentication
  - (optional) UNICORE token generation
 
+## Running the service
+
+### Logging
+
+Logfiles (in-container) are in '/var/log/unicore'
+
+### Persistent data
+
+Data is stored (in-container) in '/var/run/unicore'
+
 
 ## Using the service
 

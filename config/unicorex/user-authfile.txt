@@ -2,9 +2,6 @@
 # username/password file for user authentication
 # with the 'FILE' authenticator
 #
-# This is enabled/disabled in 'main.config'
-#
-
 
 # format:
 #
