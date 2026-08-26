@@ -27,9 +27,11 @@
         openssl req -x509 -newkey rsa:4096 \
                 -sha256 -nodes -days 3650 \
                 -keyout "/local/server-key.pem" \
-                -out "/local/server-credential.pem" \
+                -out "/local/trusted/server-certificate.pem" \
                 -subj "/C=EU/O=UNICORE/CN=UNICORE Connector"
+        cat /local/server-key.pem /local/trusted/server-certificate.pem > /local/server-credential.pem
         chown unicore:unicore /local/*.pem
+        chmod og+r /local/*.pem
         cp /local/server-credential.pem /local/trusted/
     fi
 
@@ -43,7 +45,7 @@ _unicore_setup() {
     fi
 
     echo "Configuring access for HPC user '${HPC_USER}' ..."
-    cat > /unicore/unicorex/conf/user-mapfile.json <<EOF
+    cat > /local/user-mapfile.json <<EOF
 {
   ".*": {
     "role": "user",
@@ -51,19 +53,37 @@ _unicore_setup() {
   }
 }
 EOF
+    chown unicore:unicore /local/user-mapfile.json
 
-    cat > /unicore/unicorex/conf/identities.json <<EOF
+    cat > /local/identities.json <<EOF
 {
 
   "${HPC_USER}": {
-    "key": "/local/user-sshkey",
+    "key": "${HPC_USER_KEY}",
     "passphrase": "${HPC_USER_PASSPHRASE}"
   }
 
 }
-
-
 EOF
+    chown unicore:unicore /local/identities.json
+
+    if [ ! -e "/local/user-authfile.txt" ]; then
+        echo "Creating username/password authentication file /local/user-authfile.txt ..."
+        openssl req -x509 -newkey rsa:4096 \
+                -sha256 -nodes -days 3650 \
+                -keyout "/local/server-key.pem" \
+                -out "/local/server-credential.pem" \
+                -subj "/C=EU/O=UNICORE/CN=UNICORE Connector"
+        chown unicore:unicore /local/*.pem
+        cp /unicore/unicorex/conf/user-authfile.txt /local/
+        chown unicore:unicore /local/user-authfile.txt
+    fi
+
+    if [ ! -e "/local/idb.json" ]; then
+        echo "Creating cluster configuration file /local/idb.json ..."
+        cp /unicore/unicorex/conf/idb.json /local/
+        chown unicore:unicore /local/idb.json
+    fi
 
 }
 

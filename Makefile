@@ -1,6 +1,6 @@
 CONTAINER_NAME   = unicore-connector
 VERSION          = 0.0.1
-UNICORE-VERSION  = 11.1.0
+UNICORE-VERSION  = 11.2.0
 PATCH            = ""
 CONTAINER_REPO   = ghcr.io/unicore-eu
 CONTAINER        = $(CONTAINER_REPO)/$(CONTAINER_NAME)
@@ -21,13 +21,15 @@ unicore-servers.tgz:
 	@mv unicore-servers-$(UNICORE-VERSION)$(PATCH) unicore-servers
 
 prepare: unicore-servers.tgz
+	@rm -rf unicore/
 	@mkdir -p unicore/gateway/conf unicore/unicorex/conf unicore/certs	
 	@cp -r unicore-servers/gateway/lib unicore-servers/gateway/bin unicore/gateway
 	@cp -r unicore-servers/unicorex/lib unicore-servers/unicorex/bin unicore/unicorex
 	@cp config/gateway/* unicore/gateway/conf/
 	@cp config/unicorex/* unicore/unicorex/conf/
+	@cp config/*.sh unicore/
 
-build: Dockerfile docker-entrypoint.sh
+build: prepare Dockerfile docker-entrypoint.sh
 	docker build -t $(CONTAINER_TAG) .
 
 build-latest: unicore-servers.tgz Dockerfile docker-entrypoint.sh
