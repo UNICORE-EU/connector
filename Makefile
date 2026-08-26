@@ -32,7 +32,7 @@ prepare: unicore-servers.tgz
 build: prepare Dockerfile docker-entrypoint.sh
 	docker build -t $(CONTAINER_TAG) .
 
-build-latest: unicore-servers.tgz Dockerfile docker-entrypoint.sh
+build-latest: prepare Dockerfile docker-entrypoint.sh
 	docker build -t $(CONTAINER_LATEST) .
 
 run: build
