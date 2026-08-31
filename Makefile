@@ -36,8 +36,7 @@ build-latest: prepare Dockerfile docker-entrypoint.sh
 	docker build -t $(CONTAINER_LATEST) .
 
 run: build
-	$(eval DOCKERHOST=$(shell docker network inspect --format '{{range .IPAM.Config}}{{.Gateway}}{{end}}' bridge))
-	docker run -p ${PORT}:8080 --add-host dockerhost:$(DOCKERHOST) --mount type=bind,src=./local,dst=/local -d -ti --rm $(CONTAINER):${VERSION}
+	docker run -p ${PORT}:8080 --mount type=bind,src=./local,dst=/local -d --rm $(CONTAINER):${VERSION}
 
 clean:
 	@find -name "*~" -delete
