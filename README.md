@@ -51,6 +51,7 @@ export PUBLIC_ENDPOINT=https://localhost:8080/UNICORE
 
 # HPC login node
 export HPC_LOGIN_NODE=login1.hpc-your-org.info
+export HPC_SSH_PORT=22
 
 # User account and SSH key for accessing HPC
 export HPC_USER=service1

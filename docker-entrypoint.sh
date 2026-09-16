@@ -44,8 +44,9 @@ _unicore_setup() {
         . /local/environment.sh
     fi
 
-    echo "Configuring access for HPC user '${HPC_USER}' ..."
-    cat > /local/user-mapfile.json <<EOF
+    if [ ! -e "/local/user-authfile.txt" ]; then
+        echo "Configuring access for HPC user '${HPC_USER}' ..."
+        cat > /local/user-mapfile.json <<EOF
 {
   ".*": {
     "role": "user",
@@ -53,9 +54,12 @@ _unicore_setup() {
   }
 }
 EOF
-    chown unicore:unicore /local/user-mapfile.json
+        chown unicore:unicore /local/user-mapfile.json
 
-    cat > /local/identities.json <<EOF
+    fi
+
+    if [ ! -e "/local/identities.json" ]; then
+        cat > /local/identities.json <<EOF
 {
 
   "${HPC_USER}": {
@@ -65,16 +69,11 @@ EOF
 
 }
 EOF
-    chown unicore:unicore /local/identities.json
+        chown unicore:unicore /local/identities.json
+    fi
 
     if [ ! -e "/local/user-authfile.txt" ]; then
         echo "Creating username/password authentication file /local/user-authfile.txt ..."
-        openssl req -x509 -newkey rsa:4096 \
-                -sha256 -nodes -days 3650 \
-                -keyout "/local/server-key.pem" \
-                -out "/local/server-credential.pem" \
-                -subj "/C=EU/O=UNICORE/CN=UNICORE Connector"
-        chown unicore:unicore /local/*.pem
         cp /unicore/unicorex/conf/user-authfile.txt /local/
         chown unicore:unicore /local/user-authfile.txt
     fi
