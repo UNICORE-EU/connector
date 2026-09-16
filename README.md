@@ -49,7 +49,7 @@ An example '/local/environment.sh' file
 # Public endpoint
 export PUBLIC_ENDPOINT=https://localhost:8080/UNICORE
 
-# HPC frontend address
+# HPC login node
 export HPC_LOGIN_NODE=login1.hpc-your-org.info
 
 # User account and SSH key for accessing HPC
@@ -62,8 +62,8 @@ export HPC_JOBS_DIRECTORY='$HOME/UNICORE_Jobs'
 
 # TSI location
 export HPC_TSI_PATH='$HOME/.unicore/tsi.pyz'
-# Setup the TSI before first use
-export HPC_TSI_SETUP='mkdir -p .unicore ; [ -f .unicore/tsi.pyz ] || wget -q https://github.com/UNICORE-EU/tsi/releases/download/11.2.0/unicore-tsi-nobatch-11.2.0.pyz -O .unicore/tsi.pyz'
+# Download the TSI code before first use
+export HPC_TSI_SETUP='mkdir -p .unicore ; [ -f .unicore/tsi.pyz ] || wget -q https://github.com/UNICORE-EU/tsi/releases/download/11.2.0/unicore-tsi-slurm-11.2.0.pyz -O .unicore/tsi.pyz'
 
 # Authentication
 export AUTHENTICATION='FILE OAUTH'
@@ -131,6 +131,34 @@ Apart from OIDC, the default setup includes username/password authentication. Th
 
 This is configured in '/local/user-authfile.txt', with a default 'unicore' user with password 'test123'.
 
-### Running jobs
+### Testing
 
-TBD
+Any UNICORE client can be used, for PyUNICORE
+
+```bash
+
+# install PyUNICORE
+pip install -U pyunicore
+
+# create a config file
+
+cat > /tmp/unicore.preferences << EOF
+
+authentication-method=USERNAME
+username=unicore
+password=test123
+
+registry=https://localhost:8080/UNICORE/rest/registries/default_registry
+
+accept-all-issuers=true
+client.serverHostnameChecking=NONE
+
+EOF
+
+# show info about the service
+unicore info -c /tmp/unicore.preferences  https://localhost:8080/UNICORE/rest/core
+
+# run a short test executable 'id'
+unicore exec -v -c /tmp/unicore.preferences -- id
+```
+
