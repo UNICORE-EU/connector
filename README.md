@@ -133,7 +133,7 @@ This is configured in '/local/user-authfile.txt', with a default 'unicore' user 
 
 ### Testing
 
-Any UNICORE client can be used, for PyUNICORE
+Any UNICORE client can be used, for example PyUNICORE:
 
 ```bash
 
