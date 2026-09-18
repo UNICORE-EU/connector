@@ -1,5 +1,5 @@
 CONTAINER_NAME   = unicore-connector
-VERSION          = 0.0.1
+VERSION          = 0.0.2
 UNICORE-VERSION  = 11.2.0
 PATCH            = ""
 CONTAINER_REPO   = ghcr.io/unicore-eu
