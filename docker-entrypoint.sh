@@ -32,7 +32,6 @@
         cat /local/server-key.pem /local/trusted/server-certificate.pem > /local/server-credential.pem
         chown unicore:unicore /local/*.pem
         chmod og+r /local/*.pem
-        cp /local/server-credential.pem /local/trusted/
     fi
 
  }
@@ -83,7 +82,12 @@ EOF
         cp /unicore/unicorex/conf/idb.json /local/
         chown unicore:unicore /local/idb.json
     fi
-
+    
+    # make sure the ssh key file can be used 
+    sudo -u unicore test -r ${HPC_USER_KEY} || {
+      echo "Making ${HPC_USER_KEY} readable for the 'unicore' user"
+      chmod o+r ${HPC_USER_KEY} ${HPC_USER_KEY}.pub
+    }
 }
 
 _main() {
